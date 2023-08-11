@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Chord Processor</title>
+</head>
+
+<body>
+
+    <h2>Chord Processor</h2>
+    <p>Insert chords separated by spaces:</p>
+
+    <textarea id="chordInput" rows="4" cols="50"></textarea><br><br>
+
+    <button onclick="processChords()">Process Chords</button>
+
+    <div id="output">
+        <h3>Processed Chords:</h3>
+        <pre id="processedChords"></pre>
+    </div>
+
+    <script>
+        // Define PIANO_KEYS and CHORDS arrays
+        var PIANO_KEYS = ['c', 'c#', 'd', 'd#', 'e', 'f', 'f#', 'g', 'g#', 'a', 'a#', 'b'];
+
+        var CHORDS = {
+            'c': ['c', 'e', 'g'],
+            'c#': ['c#', 'f', 'g#'],
+            'd': ['d', 'f#', 'a'],
+            'd#': ['d#', 'g', 'a#'],
+            'e': ['e', 'g#', 'b'],
+            'f': ['f', 'a', 'c'],
+            'f#': ['f#', 'a#', 'c#'],
+            'g': ['g', 'b', 'd'],
+            'g#': ['g#', 'c', 'd#'],
+            'a': ['a', 'c#', 'e'],
+            'a#': ['a#', 'd', 'f'],
+            'b': ['b', 'd#', 'f#'],
+            'cm': ['c', 'd#', 'g'],
+            'c#m': ['c#', 'e', 'g#'],
+            'dm': ['d', 'f', 'a'],
+            'd#m': ['d#', 'f#', 'a#'],
+            'em': ['e', 'g', 'b'],
+            'fm': ['f', 'g#', 'c'],
+            'f#m': ['f#', 'a', 'c#'],
+            'gm': ['g', 'a#', 'd'],
+            'g#m': ['g#', 'b', 'd#'],
+            'am': ['a', 'c', 'e'],
+            'a#m': ['a#', 'c#', 'f'],
+            'bm': ['b', 'd', 'f#'],
+            'c7': ['c', 'e', 'g', 'a#'],
+            'c#7': ['c#', 'f', 'g#', 'b'],
+            'd7': ['d', 'f#', 'a', 'c'],
+            'd#7': ['d#', 'g', 'a#', 'c#'],
+            'e7': ['e', 'g#', 'b', 'd'],
+            'f7': ['f', 'a', 'c', 'd#'],
+            'f#7': ['f#', 'a#', 'c#', 'e'],
+            'g7': ['g', 'b', 'd', 'f'],
+            'g#7': ['g#', 'c', 'd#', 'f#'],
+            'a7': ['a', 'c#', 'e', 'g'],
+            'a#7': ['a#', 'd', 'f', 'g#'],
+            'b7': ['b', 'd#', 'f#', 'a'],
+        };
+
+
+
+        function processChords() {
+            var chordInput = document.getElementById("chordInput").value;
+            var lines = chordInput.split('\n');
+            var processedLines = processLines(lines);
+            document.getElementById("processedChords").textContent = processedLines.join('\n'); // Add '\n\n' for double newline
+        }
+
+        function processLines(lines) {
+            var processedLines = [];
+
+            for (var i = 0; i < lines.length; i++) {
+                var line = lines[i].trim();
+                if (line.startsWith("#") || line.startsWith("[")) {
+                    processedLines.push(line);
+                } else {
+                    var chords = line.split(' ');
+                    var processedChords = processChordsJavaScript(chords);
+
+                    processedChords.forEach(element => {
+                        processedLines.push(element);
+                    });
+                }
+            }
+
+            return processedLines;
+        }
+
+        function calculateFingerChange(chord1, chord2) {
+            var totalChange = 0;
+            for (var i = 0; i < chord1.length; i++) {
+                totalChange += Math.abs(PIANO_KEYS.indexOf(chord1[i]) - PIANO_KEYS.indexOf(chord2[i]));
+            }
+            return totalChange;
+        }
+
+        function sortChordNotes(chord) {
+            return chord.slice().sort(function (a, b) {
+                return PIANO_KEYS.indexOf(a) - PIANO_KEYS.indexOf(b);
+            });
+        }
+
+        function processChordsJavaScript(inputChords) {
+            var processedChords = [];
+
+            for (var i = 0; i < inputChords.length; i++) {
+                var chord = inputChords[i];
+                var chordNotes = CHORDS[chord];
+                if (chordNotes) {
+                    var sortedChord = sortChordNotes(chordNotes);
+                    processedChords.push(sortedChord.join(' '));
+                }
+            }
+
+            var finalProcessedChords = [];
+            for (var i = 0; i < inputChords.length; i++) {
+                finalProcessedChords.push(processedChords[i % processedChords.length]);
+            }
+
+            return finalProcessedChords;
+        }
+    </script>
+
+</body>
+
+</html>
